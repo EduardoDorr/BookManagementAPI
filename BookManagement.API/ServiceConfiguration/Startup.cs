@@ -17,15 +17,19 @@ public static class Startup
     {
         var connectionString = configuration.GetValue<string>("DatabaseSettings:BookManagementConnectionString");
 
-        services.AddDbContext<BooksDbContext>(opts => opts.UseSqlServer(connectionString));
+        // Contexts
+        services.AddDbContext<BooksDbContext>(opts => 
+                        opts.UseSqlServer(connectionString));
 
+        // Repositories
         services.AddTransient<IBookRepository, BookRepository>();
         services.AddTransient<IUserRepository, UserRepository>();
         services.AddTransient<ILoanRepository, LoanRepository>();
 
+        // Services
         services.AddTransient<IBookService, BookService>();
-        //services.AddTransient<IUserService, UserService>();
-        //services.AddTransient<ILoanService, LoanService>();
+        services.AddTransient<IUserService, UserService>();
+        services.AddTransient<ILoanService, LoanService>();
 
         //services.AddAutoMapper(typeof(CustomerProfile).Assembly);
 

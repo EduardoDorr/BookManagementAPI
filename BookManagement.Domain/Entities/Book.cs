@@ -8,6 +8,8 @@ public class Book : EntityBase
     public int PublicationYear { get; set; }
     public int Stock { get; set; }
 
+    public virtual ICollection<Loan> Loans { get; set; } = new List<Loan>();
+
     public void Update(string title, string author, string isbn, int publicationYear, int stock)
     {
         Title = title;
