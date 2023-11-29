@@ -1,10 +1,10 @@
 ﻿namespace BookManagement.Domain.Entities;
 
-public class Loan : EntityBase
+public class Borrow : BaseEntity
 {
     public int UserId { get; set; }
     public int BookId { get; set; }
-    public DateTime DateOfLoan { get; set; }
+    public DateTime DateOfBorrow { get; set; }
     public DateTime ScheduledReturnDate { get; set; }
     public DateTime? RealReturnDate { get; set; }
 

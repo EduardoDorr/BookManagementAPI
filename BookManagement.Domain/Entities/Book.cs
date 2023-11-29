@@ -1,6 +1,6 @@
 ﻿namespace BookManagement.Domain.Entities;
 
-public class Book : EntityBase
+public class Book : BaseEntity
 {
     public string Title { get; set; }
     public string Author { get; set; }
@@ -8,7 +8,18 @@ public class Book : EntityBase
     public int PublicationYear { get; set; }
     public int Stock { get; set; }
 
-    public virtual ICollection<Loan> Loans { get; set; } = new List<Loan>();
+    public virtual ICollection<Borrow> Borrows { get; set; } = new List<Borrow>();
+    
+    public Book(string title, string author, string isbn, int publicationYear, int stock)
+    {
+        Title = title;
+        Author = author;
+        Isbn = isbn;
+        PublicationYear = publicationYear;
+        Stock = stock;
+        CreatedAt = DateTime.Now;
+        UpdatedAt = DateTime.Now;
+    }
 
     public void Update(string title, string author, string isbn, int publicationYear, int stock)
     {
@@ -17,5 +28,6 @@ public class Book : EntityBase
         Isbn = isbn;
         PublicationYear = publicationYear;
         Stock = stock;
+        UpdatedAt = DateTime.Now;
     }
 }

@@ -1,12 +1,12 @@
 ﻿using BookManagement.Domain.Entities;
 
-namespace BookManagement.Domain.Interfaces.Repositories;
+namespace BookManagement.Application.Services;
 
-public interface IUserRepository
+public interface IUserService
 {
-    Task<bool> CreateUser(User user);
+    Task<int> CreateUser(User user);
     Task<IEnumerable<User>> GetUsers(int skip = 0, int take = 50);
     Task<User?> GetUserById(int id);
     Task<bool> UpdateUser(User user);
-    Task<bool> DeleteUser(User user);
+    Task<bool> DeleteUser(int id);
 }

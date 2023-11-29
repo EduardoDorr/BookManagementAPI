@@ -1,11 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Reflection;
+using System.Text.Json.Serialization;
 
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 
+using BookManagement.Domain.Interfaces;
 using BookManagement.Application.Services;
-using BookManagement.Domain.Interfaces.Services;
-using BookManagement.Domain.Interfaces.Repositories;
 using BookManagement.Infrastructure.Data;
 using BookManagement.Infrastructure.Repositories;
 
@@ -21,17 +21,18 @@ public static class Startup
         services.AddDbContext<BooksDbContext>(opts => 
                         opts.UseSqlServer(connectionString));
 
+        // Automapper
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
         // Repositories
         services.AddTransient<IBookRepository, BookRepository>();
         services.AddTransient<IUserRepository, UserRepository>();
-        services.AddTransient<ILoanRepository, LoanRepository>();
+        services.AddTransient<IBorrowRepository, BorrowRepository>();
 
         // Services
         services.AddTransient<IBookService, BookService>();
         services.AddTransient<IUserService, UserService>();
-        services.AddTransient<ILoanService, LoanService>();
-
-        //services.AddAutoMapper(typeof(CustomerProfile).Assembly);
+        services.AddTransient<IBorrowService, BorrowService>();
 
         services.AddControllers().AddJsonOptions(options =>
         {

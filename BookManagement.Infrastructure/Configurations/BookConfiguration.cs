@@ -1,30 +1,39 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using BookManagement.Domain.Entities;
 
-namespace BookManagement.Infrastructure.Configurations
+namespace BookManagement.Infrastructure.Configurations;
+
+internal class BookConfiguration : BaseEntityConfiguration<Book>
 {
-    internal static class BookConfiguration
+    public override void Configure(EntityTypeBuilder<Book> builder)
     {
-        public static void Configure(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Book>()
-                        .HasKey(b => b.Isbn);
+        base.Configure(builder);
 
-            modelBuilder.Entity<Book>(b =>
-            {
-                b.Property(b => b.Id).UseIdentityColumn().HasColumnOrder(0);
-                b.Property(b => b.Title).HasMaxLength(200).HasColumnOrder(1).IsRequired();
-                b.Property(b => b.Author).HasMaxLength(100).HasColumnOrder(2).IsRequired();
-                b.Property(b => b.Isbn).HasMaxLength(13).HasColumnOrder(3).IsRequired();
-                b.Property(b => b.PublicationYear).IsRequired();
-                b.Property(b => b.Stock).IsRequired();
-            });
+        builder.HasIndex(b => b.Isbn)
+               .IsUnique();
 
-            modelBuilder.Entity<Book>()
-                        .HasMany(b => b.Loans)
-                        .WithOne(l => l.Book)
-                        .HasPrincipalKey(b => b.Id)
-                        .IsRequired();
-        }
+        builder.Property(b => b.Title)
+               .HasMaxLength(200)
+               .IsRequired();
+
+        builder.Property(b => b.Author)
+               .HasMaxLength(100)
+               .IsRequired();
+
+        builder.Property(b => b.Isbn)
+               .HasMaxLength(13)
+               .IsRequired();
+
+        builder.Property(b => b.PublicationYear)
+               .IsRequired();
+
+        builder.Property(b => b.Stock)
+               .IsRequired();
+
+        builder.HasMany(b => b.Borrows)
+               .WithOne(l => l.Book)
+               .HasForeignKey(l => l.BookId)
+               .IsRequired();
     }
 }

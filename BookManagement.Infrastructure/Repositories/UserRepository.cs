@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using BookManagement.Domain.Entities;
-using BookManagement.Domain.Interfaces.Repositories;
 using BookManagement.Infrastructure.Data;
+using BookManagement.Domain.Interfaces;
 
 namespace BookManagement.Infrastructure.Repositories;
 
@@ -28,7 +28,7 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetUserById(int id)
     {
-        return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        return await _context.Users.SingleOrDefaultAsync(u => u.Id == id);
     }
 
     public async Task<bool> UpdateUser(User user)

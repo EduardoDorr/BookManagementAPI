@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-using BookManagement.Domain.Entities;
-using BookManagement.Domain.Interfaces.Services;
+using BookManagement.Application.Services;
+using BookManagement.Application.Dtos.Book;
 
 namespace BookManagement.API.Controllers;
 
@@ -17,7 +17,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Book>>> GetAll(int skip = 0, int take = 50)
+    public async Task<ActionResult<IEnumerable<GetBookDto>>> GetAll(int skip = 0, int take = 50)
     {
         var books = await _bookService.GetBooks(skip, take);
 
@@ -25,7 +25,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Book>> GetById(int id)
+    public async Task<ActionResult<GetBookDto>> GetById(int id)
     {
         var book = await _bookService.GetBookById(id);
 
@@ -36,18 +36,16 @@ public class BooksController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] Book book)
+    public async Task<IActionResult> Post([FromBody] CreateBookDto book)
     {
         var bookId = await _bookService.CreateBook(book);
 
         return CreatedAtAction(nameof(GetById), new { id = bookId }, book);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] Book book)
+    [HttpPut]
+    public async Task<IActionResult> Put([FromBody] UpdateBookDto book)
     {
-        book.Id = id;
-
         var updated = await _bookService.UpdateBook(book);
 
         if (updated)

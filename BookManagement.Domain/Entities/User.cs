@@ -1,11 +1,11 @@
 ﻿namespace BookManagement.Domain.Entities;
 
-public class User : EntityBase
+public class User : BaseEntity
 {
     public string Name { get; set; }
     public string Email { get; set; }
 
-    public virtual ICollection<Loan> Loans { get; set; } = new List<Loan>();
+    public virtual ICollection<Borrow> Borrows { get; set; } = new List<Borrow>();
 
     public void Update(string name, string email)
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
 using BookManagement.Domain.Entities;
-using BookManagement.Domain.Interfaces.Services;
+using BookManagement.Application.Services;
 
 namespace BookManagement.API.Controllers;
 

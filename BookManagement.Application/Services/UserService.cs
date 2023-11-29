@@ -1,6 +1,5 @@
 ﻿using BookManagement.Domain.Entities;
-using BookManagement.Domain.Interfaces.Services;
-using BookManagement.Domain.Interfaces.Repositories;
+using BookManagement.Domain.Interfaces;
 
 namespace BookManagement.Application.Services;
 
