@@ -28,10 +28,5 @@ public class CreateBookDtoValidator : AbstractValidator<CreateBookDto>
         RuleFor(b => b.PublicationYear)
             .GreaterThan(0)
             .WithMessage("Publication year must be valid");
-
-        RuleFor(b => b.Quantity)
-            .NotNull()
-            .NotEmpty()
-            .WithMessage("Quantity must not be null or empty");
     }
 }

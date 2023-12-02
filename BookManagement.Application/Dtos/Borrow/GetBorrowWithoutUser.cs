@@ -1,5 +1,5 @@
-﻿using BookManagement.Application.Dtos.Book;
-using BookManagement.Domain.Enums;
+﻿using BookManagement.Domain.Enums;
+using BookManagement.Application.Dtos.Book;
 
 namespace BookManagement.Application.Dtos.Borrow;
 
