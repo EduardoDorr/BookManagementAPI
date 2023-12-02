@@ -21,12 +21,14 @@ namespace BookManagement.Infrastructure.Migrations
                     Author = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Isbn = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: false),
                     PublicationYear = table.Column<int>(type: "int", nullable: false),
-                    Stock = table.Column<int>(type: "int", nullable: false)
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Books", x => x.Isbn);
-                    table.UniqueConstraint("AK_Books_Id", x => x.Id);
+                    table.PrimaryKey("PK_Books", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -36,37 +38,42 @@ namespace BookManagement.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Email);
-                    table.UniqueConstraint("AK_Users_Id", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Loans",
+                name: "Borrows",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     BookId = table.Column<int>(type: "int", nullable: false),
-                    DateOfLoan = table.Column<DateTime>(type: "datetime", nullable: false),
+                    DateOfBorrow = table.Column<DateTime>(type: "datetime", nullable: false),
                     ScheduledReturnDate = table.Column<DateTime>(type: "datetime", nullable: false),
-                    RealReturnDate = table.Column<DateTime>(type: "datetime", nullable: true)
+                    RealReturnDate = table.Column<DateTime>(type: "datetime", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Loans", x => x.Id);
+                    table.PrimaryKey("PK_Borrows", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Loans_Books_BookId",
+                        name: "FK_Borrows_Books_BookId",
                         column: x => x.BookId,
                         principalTable: "Books",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Loans_Users_UserId",
+                        name: "FK_Borrows_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -74,21 +81,33 @@ namespace BookManagement.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Loans_BookId",
-                table: "Loans",
+                name: "IX_Books_Isbn",
+                table: "Books",
+                column: "Isbn",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Borrows_BookId",
+                table: "Borrows",
                 column: "BookId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Loans_UserId",
-                table: "Loans",
+                name: "IX_Borrows_UserId",
+                table: "Borrows",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Loans");
+                name: "Borrows");
 
             migrationBuilder.DropTable(
                 name: "Books");

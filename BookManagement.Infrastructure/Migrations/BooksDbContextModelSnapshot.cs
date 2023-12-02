@@ -24,42 +24,51 @@ namespace BookManagement.Infrastructure.Migrations
 
             modelBuilder.Entity("BookManagement.Domain.Entities.Book", b =>
                 {
-                    b.Property<string>("Isbn")
-                        .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)")
-                        .HasColumnOrder(3);
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Author")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnOrder(2);
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnOrder(0);
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Isbn")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
 
                     b.Property<int>("PublicationYear")
                         .HasColumnType("int");
 
-                    b.Property<int>("Stock")
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
-                        .HasColumnOrder(1);
+                        .HasColumnType("nvarchar(200)");
 
-                    b.HasKey("Isbn");
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime");
 
-                    b.ToTable("Books");
+                    b.HasKey("Id");
+
+                    b.HasIndex("Isbn")
+                        .IsUnique();
+
+                    b.ToTable("Books", (string)null);
                 });
 
-            modelBuilder.Entity("BookManagement.Domain.Entities.Loan", b =>
+            modelBuilder.Entity("BookManagement.Domain.Entities.Borrow", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -70,13 +79,22 @@ namespace BookManagement.Infrastructure.Migrations
                     b.Property<int>("BookId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("DateOfLoan")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
+
+                    b.Property<DateTime>("DateOfBorrow")
+                        .HasColumnType("datetime");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("RealReturnDate")
                         .HasColumnType("datetime");
 
                     b.Property<DateTime>("ScheduledReturnDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime");
 
                     b.Property<int>("UserId")
@@ -88,47 +106,55 @@ namespace BookManagement.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Loans");
+                    b.ToTable("Borrows", (string)null);
                 });
 
             modelBuilder.Entity("BookManagement.Domain.Entities.User", b =>
                 {
-                    b.Property<string>("Email")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnOrder(2);
-
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnOrder(0);
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnOrder(1);
+                        .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("Email");
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime");
 
-                    b.ToTable("Users");
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("BookManagement.Domain.Entities.Loan", b =>
+            modelBuilder.Entity("BookManagement.Domain.Entities.Borrow", b =>
                 {
                     b.HasOne("BookManagement.Domain.Entities.Book", "Book")
-                        .WithMany("Loans")
+                        .WithMany("Borrows")
                         .HasForeignKey("BookId")
-                        .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BookManagement.Domain.Entities.User", "User")
-                        .WithMany("Loans")
+                        .WithMany("Borrows")
                         .HasForeignKey("UserId")
-                        .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -139,12 +165,12 @@ namespace BookManagement.Infrastructure.Migrations
 
             modelBuilder.Entity("BookManagement.Domain.Entities.Book", b =>
                 {
-                    b.Navigation("Loans");
+                    b.Navigation("Borrows");
                 });
 
             modelBuilder.Entity("BookManagement.Domain.Entities.User", b =>
                 {
-                    b.Navigation("Loans");
+                    b.Navigation("Borrows");
                 });
 #pragma warning restore 612, 618
         }

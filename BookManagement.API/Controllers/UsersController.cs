@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-using BookManagement.Domain.Entities;
-using BookManagement.Domain.Interfaces.Services;
+using BookManagement.Application.Services;
+using BookManagement.Application.Dtos.User;
 
 namespace BookManagement.API.Controllers;
 
-[Route("api/v1/[controller]")]
+[Route("/api/v1/[controller]")]
 [ApiController]
 public class UsersController : ControllerBase
 {
@@ -17,38 +17,55 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<User>>> GetAll(int skip = 0, int take = 50)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<GetUserDto>>> GetUsers(int skip = 0, int take = 50)
     {
-        var users = await _userService.GetUsers(skip, take);
+        var usersDto = await _userService.GetUsersAsync(skip, take);
 
-        return Ok(users);
+        return Ok(usersDto);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Book>> GetById(int id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GetUserDto>> GetUserById(int id)
     {
-        var user = await _userService.GetUserById(id);
+        var userDto = await _userService.GetUserByIdAsync(id);
 
-        if (user is null)
+        if (userDto is null)
             return NotFound();
 
-        return Ok(user);
+        return Ok(userDto);
+    }
+
+    [HttpGet("borrows/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GetUserAndBorrowsDto>> GetUserAndBorrowsById(int id)
+    {
+        var userAndBorrowsDto = await _userService.GetUserAndBorrowByIdAsync(id);
+
+        if (userAndBorrowsDto is null)
+            return NotFound();
+
+        return Ok(userAndBorrowsDto);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] User user)
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateUser([FromBody] CreateUserDto userDto)
     {
-        var userId = await _userService.CreateUser(user);
+        var userId = await _userService.CreateUserAsync(userDto);
 
-        return CreatedAtAction(nameof(GetById), new { id = userId }, user);
+        return CreatedAtAction(nameof(GetUserById), new { id = userId }, userDto);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] User user)
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto userDto)
     {
-        user.Id = id;
-
-        var updated = await _userService.UpdateUser(user);
+        var updated = await _userService.UpdateUserAsync(userDto);
 
         if (updated)
             return Ok();
@@ -57,9 +74,11 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteUser(int id)
     {
-        var deleted = await _userService.DeleteUser(id);
+        var deleted = await _userService.DeleteUserAsync(id);
 
         if (deleted)
             return Ok();

@@ -1,54 +1,80 @@
-﻿using BookManagement.Domain.Entities;
-using BookManagement.Domain.Interfaces.Services;
-using BookManagement.Domain.Interfaces.Repositories;
+﻿using AutoMapper;
+
+using BookManagement.Domain.Entities;
+using BookManagement.Domain.Interfaces;
+using BookManagement.Application.Dtos.User;
 
 namespace BookManagement.Application.Services;
 
 public class UserService : IUserService
 {
-    private readonly IUserRepository _repository;
+    private readonly IUserRepository _userRepository;
+    private readonly IMapper _mapper;
 
-    public UserService(IUserRepository repository)
+    public UserService(IUserRepository repository, IMapper mapper)
     {
-        _repository = repository;
+        _userRepository = repository;
+        _mapper = mapper;
     }
 
-    public async Task<int> CreateUser(User user)
+    public async Task<int> CreateUserAsync(CreateUserDto userDto)
     {
-        await _repository.CreateUser(user);
+        var user = _mapper.Map<User>(userDto);
+
+        await _userRepository.CreateUserAsync(user);
+
+        var created = await _userRepository.SaveAsync();
+
+        if (!created)
+            throw new Exception("User could not be created");
 
         return user.Id;
     }        
 
-    public async Task<IEnumerable<User>> GetUsers(int skip = 0, int take = 50)
+    public async Task<IEnumerable<GetUserDto>> GetUsersAsync(int skip = 0, int take = 50)
     {
-        return await _repository.GetUsers(skip, take);
+        var users = await _userRepository.GetUsersAsync(skip, take);
+
+        return _mapper.Map<IEnumerable<GetUserDto>>(users);
     }
 
-    public async Task<User?> GetUserById(int id)
+    public async Task<GetUserDto?> GetUserByIdAsync(int id)
     {
-        return await _repository.GetUserById(id);            
+        var user = await _userRepository.GetUserByIdAsync(id);
+
+        return _mapper.Map<GetUserDto>(user);
     }
 
-    public async Task<bool> UpdateUser(User user)
+    public async Task<GetUserAndBorrowsDto?> GetUserAndBorrowByIdAsync(int id)
     {
-        var userToUpdate = await _repository.GetUserById(user.Id);
+        var userAndBorrows = await _userRepository.GetUserAndBorrowsByIdAsync(id);
 
-        if (userToUpdate is null)
+        return _mapper.Map<GetUserAndBorrowsDto>(userAndBorrows);
+    }
+
+    public async Task<bool> UpdateUserAsync(UpdateUserDto userDto)
+    {
+        var UserToUpdate = await _userRepository.GetUserByIdAsync(userDto.Id);
+
+        if (UserToUpdate is null)
             return false;
 
-        userToUpdate.Update(user.Name, user.Email);
+        UserToUpdate.Update(userDto.Name, userDto.Email, userDto.IsActive);
 
-        return await _repository.UpdateUser(userToUpdate);
+        _userRepository.UpdateUser(UserToUpdate);
+
+        return await _userRepository.SaveAsync();
     }
 
-    public async Task<bool> DeleteUser(int id)
+    public async Task<bool> DeleteUserAsync(int id)
     {
-        var userToDelete = await _repository.GetUserById(id);
+        var userToDelete = await _userRepository.GetUserByIdAsync(id);
 
         if (userToDelete is null)
             return false;
 
-        return await _repository.DeleteUser(userToDelete);
-    }
+        _userRepository.DeleteUser(userToDelete);
+
+        return await _userRepository.SaveAsync();
+    }    
 }

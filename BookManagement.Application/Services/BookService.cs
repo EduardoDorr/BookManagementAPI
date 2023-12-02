@@ -1,54 +1,87 @@
-﻿using BookManagement.Domain.Entities;
-using BookManagement.Domain.Interfaces.Services;
-using BookManagement.Domain.Interfaces.Repositories;
+﻿using AutoMapper;
+
+using BookManagement.Domain.Entities;
+using BookManagement.Domain.Interfaces;
+using BookManagement.Application.Dtos.Book;
 
 namespace BookManagement.Application.Services;
 
 public class BookService : IBookService
 {
-    private readonly IBookRepository _repository;
+    private readonly IBookRepository _bookRepository;
+    private readonly IMapper _mapper;
 
-    public BookService(IBookRepository repository)
+    public BookService(IBookRepository bookRepository, IMapper mapper)
     {
-        _repository = repository;
+        _bookRepository = bookRepository;
+        _mapper = mapper;
     }
 
-    public async Task<int> CreateBook(Book book)
+    public async Task<int> CreateBookAsync(CreateBookDto bookDto)
     {
-        await _repository.CreateBook(book);
+        var book = _mapper.Map<Book>(bookDto);
+
+        await _bookRepository.CreateBookAsync(book);
+
+        var created = await _bookRepository.SaveAsync();
+
+        if (!created)
+            throw new Exception("Book could not be created");
 
         return book.Id;
     }
 
-    public async Task<IEnumerable<Book>> GetBooks(int skip = 0, int take = 50)
+    public async Task<IEnumerable<GetBookDto>> GetBooksAsync(int skip = 0, int take = 50)
     {
-        return await _repository.GetBooks(skip, take);
+        var books = await _bookRepository.GetBooksAsync(skip, take);
+
+        return _mapper.Map<IEnumerable<GetBookDto>>(books);
     }
 
-    public async Task<Book?> GetBookById(int id)
+    public async Task<GetBookDto?> GetBookByIdAsync(int id)
     {
-        return await _repository.GetBookById(id);
+        var book = await _bookRepository.GetBookByIdAsync(id);
+
+        return _mapper.Map<GetBookDto>(book);
     }
 
-    public async Task<bool> UpdateBook(Book book)
+    public async Task<bool> UpdateBookAsync(UpdateBookDto bookDto)
     {
-        var bookToUpdate = await _repository.GetBookById(book.Id);
+        var bookToUpdate = await _bookRepository.GetBookByIdAsync(bookDto.Id);
 
         if (bookToUpdate is null)
             return false;
 
-        bookToUpdate.Update(book.Title, book.Author, book.Isbn, book.PublicationYear, book.Stock);
+        bookToUpdate.Update(bookDto.Title, bookDto.Author, bookDto.Isbn, bookDto.PublicationYear, bookDto.IsActive);
 
-        return await _repository.UpdateBook(bookToUpdate);
+        _bookRepository.UpdateBook(bookToUpdate);
+
+        return await _bookRepository.SaveAsync();
     }
 
-    public async Task<bool> DeleteBook(int id)
+    public async Task<bool> AddQuantityAsync(int id, int quantity)
     {
-        var bookToDelete = await _repository.GetBookById(id);
+        var bookToUpdate = await _bookRepository.GetBookByIdAsync(id);
+
+        if (bookToUpdate is null)
+            return false;
+
+        bookToUpdate.Add(quantity);
+
+        _bookRepository.UpdateBook(bookToUpdate);
+
+        return await _bookRepository.SaveAsync();
+    }
+
+    public async Task<bool> DeleteBookAsync(int id)
+    {
+        var bookToDelete = await _bookRepository.GetBookByIdAsync(id);
 
         if (bookToDelete is null)
             return false;
 
-        return await _repository.DeleteBook(bookToDelete);
-    }
+        _bookRepository.DeleteBook(bookToDelete);
+
+        return await _bookRepository.SaveAsync();
+    }    
 }

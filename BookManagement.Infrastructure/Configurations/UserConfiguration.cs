@@ -1,30 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using BookManagement.Domain.Entities;
 
-namespace BookManagement.Infrastructure.Configurations
+namespace BookManagement.Infrastructure.Configurations;
+
+internal class UserConfiguration : BaseEntityConfiguration<User>
 {
-    internal static class UserConfiguration
+    public override void Configure(EntityTypeBuilder<User> builder)
     {
-        public static void Configure(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<User>()
-                        .HasKey(u => u.Email);
+        base.Configure(builder);
 
-            modelBuilder.Entity<User>()
-                        .Property(u => u.Id).UseIdentityColumn();
+        builder.HasIndex(u => u.Email)
+               .IsUnique();
 
-            modelBuilder.Entity<User>(u =>
-            {
-                u.Property(u => u.Id).HasColumnOrder(0);
-                u.Property(u => u.Name).HasMaxLength(100).HasColumnOrder(1).IsRequired();
-                u.Property(u => u.Email).HasMaxLength(100).HasColumnOrder(2).IsRequired();
-            });
+        builder.Property(u => u.Name)
+               .HasMaxLength(100)
+               .IsRequired();
 
-            modelBuilder.Entity<User>()
-                        .HasMany(u => u.Loans)
-                        .WithOne(l => l.User)
-                        .HasPrincipalKey(u => u.Id)
-                        .IsRequired();
-        }
+        builder.Property(u => u.Email)
+               .HasMaxLength(100)
+               .IsRequired();
+
+        builder.HasMany(u => u.Borrows)
+               .WithOne(l => l.User)
+               .HasForeignKey(l => l.UserId)
+               .IsRequired();
     }
 }
