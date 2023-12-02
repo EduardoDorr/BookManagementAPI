@@ -9,6 +9,7 @@ using FluentValidation.AspNetCore;
 
 using BookManagement.Domain.Interfaces;
 using BookManagement.Application.Services;
+using BookManagement.Application.HostedServices;
 using BookManagement.Infrastructure.Data;
 using BookManagement.Infrastructure.Repositories;
 
@@ -41,6 +42,9 @@ public static class Startup
         builder.Services.AddTransient<IBookService, BookService>();
         builder.Services.AddTransient<IUserService, UserService>();
         builder.Services.AddTransient<IBorrowService, BorrowService>();
+
+        // Hosted Services
+        builder.Services.AddHostedService<CheckNotReturnedBorrowsHostedService>();
 
         builder.Services.AddControllers().AddJsonOptions(options =>
         {

@@ -27,6 +27,14 @@ public class BorrowRepository : IBorrowRepository
                                      .Skip(skip).Take(take).ToListAsync();
     }
 
+    public async Task<IEnumerable<Borrow>> GetNotReturnedBorrowsAsync()
+    {
+        return await _context.Borrows.Include(b => b.User)
+                                     .Include(b => b.Book)
+                                     .Where(b => b.RealReturnDate == null)
+                                     .ToListAsync();
+    }
+
     public async Task<Borrow?> GetBorrowByIdAsync(int id)
     {
         return await _context.Borrows.Include(b => b.User)
