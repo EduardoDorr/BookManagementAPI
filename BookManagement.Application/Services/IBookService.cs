@@ -4,9 +4,10 @@ namespace BookManagement.Application.Services;
 
 public interface IBookService
 {
-    Task<int> CreateBook(CreateBookDto bookDto);
-    Task<IEnumerable<GetBookDto>> GetBooks(int skip = 0, int take = 50);
-    Task<GetBookDto?> GetBookById(int id);
-    Task<bool> UpdateBook(UpdateBookDto bookDto);
-    Task<bool> DeleteBook(int id);
+    Task<int> CreateBookAsync(CreateBookDto bookDto);
+    Task<IEnumerable<GetBookDto>> GetBooksAsync(int skip = 0, int take = 50);
+    Task<GetBookDto?> GetBookByIdAsync(int id);
+    Task<bool> UpdateBookAsync(UpdateBookDto bookDto);
+    Task<bool> AddQuantityAsync(int id, int quantity);
+    Task<bool> DeleteBookAsync(int id);
 }

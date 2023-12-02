@@ -17,36 +17,59 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetBookDto>>> GetAll(int skip = 0, int take = 50)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<GetBookDto>>> GetBooks(int skip = 0, int take = 50)
     {
-        var books = await _bookService.GetBooks(skip, take);
+        var booksDto = await _bookService.GetBooksAsync(skip, take);
 
-        return Ok(books);
+        return Ok(booksDto);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<GetBookDto>> GetById(int id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GetBookDto>> GetBookById(int id)
     {
-        var book = await _bookService.GetBookById(id);
+        var bookDto = await _bookService.GetBookByIdAsync(id);
 
-        if (book is null)
+        if (bookDto is null)
             return NotFound();
 
-        return Ok(book);
+        return Ok(bookDto);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] CreateBookDto book)
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateBook([FromBody] CreateBookDto bookDto)
     {
-        var bookId = await _bookService.CreateBook(book);
+        var bookId = await _bookService.CreateBookAsync(bookDto);
 
-        return CreatedAtAction(nameof(GetById), new { id = bookId }, book);
+        return CreatedAtAction(nameof(GetBookById), new { id = bookId }, bookDto);
     }
 
     [HttpPut]
-    public async Task<IActionResult> Put([FromBody] UpdateBookDto book)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateBook([FromBody] UpdateBookDto bookDto)
     {
-        var updated = await _bookService.UpdateBook(book);
+        var updated = await _bookService.UpdateBookAsync(bookDto);
+
+        if (updated)
+            return Ok();
+
+        return NotFound();
+    }
+
+    [HttpPut("{id}/add")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AddQuantity(int id, int quantity)
+    {
+        if (quantity <= 0)
+            return BadRequest("Quantity must be greater than 0");
+
+        var updated = await _bookService.AddQuantityAsync(id, quantity);
 
         if (updated)
             return Ok();
@@ -55,9 +78,11 @@ public class BooksController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteBook(int id)
     {
-        var deleted = await _bookService.DeleteBook(id);
+        var deleted = await _bookService.DeleteBookAsync(id);
 
         if (deleted)
             return Ok();

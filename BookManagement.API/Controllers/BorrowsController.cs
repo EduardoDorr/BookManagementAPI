@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-using BookManagement.Domain.Entities;
 using BookManagement.Application.Services;
+using BookManagement.Application.Dtos.Borrow;
 
 namespace BookManagement.API.Controllers;
 
@@ -17,38 +17,54 @@ public class BorrowsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Borrow>>> GetAll(int skip = 0, int take = 50)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<GetBorrowDto>>> GetBorrows(int skip = 0, int take = 50)
     {
-        var borrows = await _borrowService.GetBorrows(skip, take);
+        var borrowsDto = await _borrowService.GetBorrowsAsync(skip, take);
 
-        return Ok(borrows);
+        return Ok(borrowsDto);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Borrow>> GetById(int id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GetBorrowDto>> GetBorrowById(int id)
     {
-        var borrow = await _borrowService.GetBorrowById(id);
+        var borrowDto = await _borrowService.GetBorrowByIdAsync(id);
 
-        if (borrow is null)
+        if (borrowDto is null)
             return NotFound();
 
-        return Ok(borrow);
+        return Ok(borrowDto);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] Borrow borrow)
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateBorrow([FromBody] CreateBorrowDto borrowDto)
     {
-        var borrowId = await _borrowService.CreateBorrow(borrow);
+        var borrowId = await _borrowService.CreateBorrowAsync(borrowDto);
 
-        return CreatedAtAction(nameof(GetById), new { id = borrowId }, borrow);
+        return CreatedAtAction(nameof(GetBorrowById), new { id = borrowId }, borrowDto);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] Borrow borrow)
+    [HttpPost("return/{id}")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> ReturnBook(int id)
     {
-        borrow.Id = id;
+        var returned = await _borrowService.ReturnBorrowAsync(id);
 
-        var updated = await _borrowService.UpdateBorrow(borrow);
+        if (returned)
+            return Ok();
+
+        return NotFound();
+    }
+
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateBorrow([FromBody] UpdateBorrowDto borrowDto)
+    {
+        var updated = await _borrowService.UpdateBorrowAsync(borrowDto);
 
         if (updated)
             return Ok();
@@ -57,9 +73,11 @@ public class BorrowsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteBorrow(int id)
     {
-        var deleted = await _borrowService.DeleteBorrow(id);
+        var deleted = await _borrowService.DeleteBorrowAsync(id);
 
         if (deleted)
             return Ok();

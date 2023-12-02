@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+
 using BookManagement.Domain.Entities;
 using BookManagement.Domain.Interfaces;
 using BookManagement.Application.Dtos.Book;
@@ -16,57 +17,71 @@ public class BookService : IBookService
         _mapper = mapper;
     }
 
-    public async Task<int> CreateBook(CreateBookDto bookDto)
+    public async Task<int> CreateBookAsync(CreateBookDto bookDto)
     {
         var book = _mapper.Map<Book>(bookDto);
 
-        await _bookRepository.CreateBook(book);
+        await _bookRepository.CreateBookAsync(book);
 
-        var created = await _bookRepository.Save();
+        var created = await _bookRepository.SaveAsync();
 
         if (!created)
-            throw new Exception("Book can not be created");
+            throw new Exception("Book could not be created");
 
         return book.Id;
     }
 
-    public async Task<IEnumerable<GetBookDto>> GetBooks(int skip = 0, int take = 50)
+    public async Task<IEnumerable<GetBookDto>> GetBooksAsync(int skip = 0, int take = 50)
     {
-        var books = await _bookRepository.GetBooks(skip, take);
+        var books = await _bookRepository.GetBooksAsync(skip, take);
 
         return _mapper.Map<IEnumerable<GetBookDto>>(books);
     }
 
-    public async Task<GetBookDto?> GetBookById(int id)
+    public async Task<GetBookDto?> GetBookByIdAsync(int id)
     {
-        var book = await _bookRepository.GetBookById(id);
+        var book = await _bookRepository.GetBookByIdAsync(id);
 
         return _mapper.Map<GetBookDto>(book);
     }
 
-    public async Task<bool> UpdateBook(UpdateBookDto book)
+    public async Task<bool> UpdateBookAsync(UpdateBookDto bookDto)
     {
-        var bookToUpdate = await _bookRepository.GetBookById(book.Id);
+        var bookToUpdate = await _bookRepository.GetBookByIdAsync(bookDto.Id);
 
         if (bookToUpdate is null)
             return false;
 
-        bookToUpdate.Update(book.Title, book.Author, book.Isbn, book.PublicationYear, book.Stock);
+        bookToUpdate.Update(bookDto.Title, bookDto.Author, bookDto.Isbn, bookDto.PublicationYear, bookDto.IsActive);
 
         _bookRepository.UpdateBook(bookToUpdate);
 
-        return await _bookRepository.Save();
+        return await _bookRepository.SaveAsync();
     }
 
-    public async Task<bool> DeleteBook(int id)
+    public async Task<bool> AddQuantityAsync(int id, int quantity)
     {
-        var bookToDelete = await _bookRepository.GetBookById(id);
+        var bookToUpdate = await _bookRepository.GetBookByIdAsync(id);
+
+        if (bookToUpdate is null)
+            return false;
+
+        bookToUpdate.Add(quantity);
+
+        _bookRepository.UpdateBook(bookToUpdate);
+
+        return await _bookRepository.SaveAsync();
+    }
+
+    public async Task<bool> DeleteBookAsync(int id)
+    {
+        var bookToDelete = await _bookRepository.GetBookByIdAsync(id);
 
         if (bookToDelete is null)
             return false;
 
         _bookRepository.DeleteBook(bookToDelete);
 
-        return await _bookRepository.Save();
-    }
+        return await _bookRepository.SaveAsync();
+    }    
 }
