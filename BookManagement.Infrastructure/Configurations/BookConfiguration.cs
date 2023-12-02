@@ -28,10 +28,7 @@ internal class BookConfiguration : BaseEntityConfiguration<Book>
         builder.Property(b => b.PublicationYear)
                .IsRequired();
 
-        builder.Property(b => b.Stock)
-               .IsRequired();
-
-        builder.HasMany(b => b.Borrows)
+        builder.HasMany(i => i.Borrows)
                .WithOne(l => l.Book)
                .HasForeignKey(l => l.BookId)
                .IsRequired();

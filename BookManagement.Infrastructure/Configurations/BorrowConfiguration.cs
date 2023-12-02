@@ -29,6 +29,8 @@ internal class BorrowConfiguration : BaseEntityConfiguration<Borrow>
                .HasColumnType("datetime")
                .IsRequired(false);
 
+        builder.Ignore(l => l.Status);
+
         builder.HasOne(l => l.Book)
                .WithMany(b => b.Borrows)
                .HasForeignKey(l => l.BookId);

@@ -14,6 +14,9 @@ internal abstract class BaseEntityConfiguration<TBase> : IEntityTypeConfiguratio
         builder.Property(b => b.Id)
                .UseIdentityColumn();
 
+        builder.Property(b => b.IsActive)
+               .IsRequired();
+
         builder.Property(b => b.CreatedAt)
                .HasColumnType("datetime")
                .IsRequired();

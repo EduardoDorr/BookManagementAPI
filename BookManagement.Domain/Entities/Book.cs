@@ -6,28 +6,45 @@ public class Book : BaseEntity
     public string Author { get; set; }
     public string Isbn { get; set; }
     public int PublicationYear { get; set; }
-    public int Stock { get; set; }
+    public int Quantity { get; set; }
 
     public virtual ICollection<Borrow> Borrows { get; set; } = new List<Borrow>();
     
-    public Book(string title, string author, string isbn, int publicationYear, int stock)
+    public Book(string title, string author, string isbn, int publicationYear)
     {
         Title = title;
         Author = author;
-        Isbn = isbn;
+        Isbn = isbn.Replace("-","");
         PublicationYear = publicationYear;
-        Stock = stock;
+        IsActive = true;
         CreatedAt = DateTime.Now;
         UpdatedAt = DateTime.Now;
     }
 
-    public void Update(string title, string author, string isbn, int publicationYear, int stock)
+    public void Update(string title, string author, string isbn, int publicationYear, bool isActive)
     {
         Title = title;
         Author = author;
-        Isbn = isbn;
+        Isbn = isbn.Replace("-", "");
         PublicationYear = publicationYear;
-        Stock = stock;
+        IsActive = isActive;
         UpdatedAt = DateTime.Now;
+    }
+
+    public void Add(int quantity)
+    {
+        Quantity += quantity;
+        UpdatedAt = DateTime.Now;
+    }
+
+    public bool Remove(int quantity)
+    {
+        if (Quantity == 0)
+            return false;
+
+        Quantity -= quantity;
+        UpdatedAt = DateTime.Now;
+
+        return true;
     }
 }

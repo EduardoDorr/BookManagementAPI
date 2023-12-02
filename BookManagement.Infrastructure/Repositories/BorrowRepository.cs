@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using BookManagement.Domain.Entities;
-using BookManagement.Infrastructure.Data;
 using BookManagement.Domain.Interfaces;
+using BookManagement.Infrastructure.Data;
 
 namespace BookManagement.Infrastructure.Repositories;
 
@@ -15,31 +15,37 @@ public class BorrowRepository : IBorrowRepository
         _context = context;
     }
 
-    public async Task<bool> CreateBorrow(Borrow borrow)
+    public async Task CreateBorrowAsync(Borrow borrow)
     {
-        _context.Borrows.Add(borrow);
-        return await _context.SaveChangesAsync() > 0;
+        await _context.Borrows.AddAsync(borrow);        
     }    
 
-    public async Task<IEnumerable<Borrow>> GetBorrows(int skip = 0, int take = 50)
+    public async Task<IEnumerable<Borrow>> GetBorrowsAsync(int skip = 0, int take = 50)
     {
-        return await _context.Borrows.Skip(skip).Take(take).ToListAsync();
+        return await _context.Borrows.Include(b => b.User)
+                                     .Include(b => b.Book)
+                                     .Skip(skip).Take(take).ToListAsync();
     }
 
-    public async Task<Borrow?> GetBorrowById(int id)
+    public async Task<Borrow?> GetBorrowByIdAsync(int id)
     {
-        return await _context.Borrows.SingleOrDefaultAsync(l => l.Id == id);
+        return await _context.Borrows.Include(b => b.User)
+                                     .Include(b => b.Book)
+                                     .SingleOrDefaultAsync(l => l.Id == id);
     }
 
-    public async Task<bool> UpdateBorrow(Borrow borrow)
+    public void UpdateBorrow(Borrow borrow)
     {
         _context.Entry(borrow).State = EntityState.Modified;
-        return await _context.SaveChangesAsync() > 0;
     }
 
-    public async Task<bool> DeleteBorrow(Borrow borrow)
+    public void DeleteBorrow(Borrow borrow)
     {
         _context.Borrows.Remove(borrow);
+    }
+
+    public async Task<bool> SaveAsync()
+    {
         return await _context.SaveChangesAsync() > 0;
     }
 }

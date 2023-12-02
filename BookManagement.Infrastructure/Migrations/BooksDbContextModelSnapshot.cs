@@ -38,6 +38,9 @@ namespace BookManagement.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Isbn")
                         .IsRequired()
                         .HasMaxLength(13)
@@ -46,7 +49,7 @@ namespace BookManagement.Infrastructure.Migrations
                     b.Property<int>("PublicationYear")
                         .HasColumnType("int");
 
-                    b.Property<int>("Stock")
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -62,7 +65,7 @@ namespace BookManagement.Infrastructure.Migrations
                     b.HasIndex("Isbn")
                         .IsUnique();
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", (string)null);
                 });
 
             modelBuilder.Entity("BookManagement.Domain.Entities.Borrow", b =>
@@ -82,6 +85,9 @@ namespace BookManagement.Infrastructure.Migrations
                     b.Property<DateTime>("DateOfBorrow")
                         .HasColumnType("datetime");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("RealReturnDate")
                         .HasColumnType("datetime");
 
@@ -100,7 +106,7 @@ namespace BookManagement.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Borrows");
+                    b.ToTable("Borrows", (string)null);
                 });
 
             modelBuilder.Entity("BookManagement.Domain.Entities.User", b =>
@@ -119,6 +125,9 @@ namespace BookManagement.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -132,7 +141,7 @@ namespace BookManagement.Infrastructure.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("BookManagement.Domain.Entities.Borrow", b =>

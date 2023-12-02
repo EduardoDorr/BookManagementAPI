@@ -21,7 +21,8 @@ namespace BookManagement.Infrastructure.Migrations
                     Author = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Isbn = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: false),
                     PublicationYear = table.Column<int>(type: "int", nullable: false),
-                    Stock = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: false)
                 },
@@ -38,6 +39,7 @@ namespace BookManagement.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: false)
                 },
@@ -57,6 +59,7 @@ namespace BookManagement.Infrastructure.Migrations
                     DateOfBorrow = table.Column<DateTime>(type: "datetime", nullable: false),
                     ScheduledReturnDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     RealReturnDate = table.Column<DateTime>(type: "datetime", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: false)
                 },

@@ -4,10 +4,10 @@ namespace BookManagement.Domain.Interfaces;
 
 public interface IBookRepository
 {
-    Task<IEnumerable<Book>> GetBooks(int skip = 0, int take = 50);
-    Task<Book?> GetBookById(int id);
-    Task CreateBook(Book book);
+    Task<IEnumerable<Book>> GetBooksAsync(int skip = 0, int take = 50);
+    Task<Book?> GetBookByIdAsync(int id);
+    Task CreateBookAsync(Book book);
     void UpdateBook(Book book);
     void DeleteBook(Book book);
-    Task<bool> Save();
+    Task<bool> SaveAsync();
 }

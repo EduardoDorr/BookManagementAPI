@@ -1,4 +1,4 @@
-using BookManagement.API.ServiceConfiguration;
+using BookManagement.API.Extensions;
 
 namespace BookManagement.API;
 
@@ -9,7 +9,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-        Startup.ConfigureServices(builder.Services, builder.Configuration);
+        builder.ConfigureServices();
 
         var app = builder.Build();
 

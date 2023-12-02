@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookManagement.Infrastructure.Migrations
 {
     [DbContext(typeof(BooksDbContext))]
-    [Migration("20231129034121_Initial Commit")]
+    [Migration("20231130223804_Initial Commit")]
     partial class InitialCommit
     {
         /// <inheritdoc />
@@ -41,6 +41,9 @@ namespace BookManagement.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Isbn")
                         .IsRequired()
                         .HasMaxLength(13)
@@ -49,7 +52,7 @@ namespace BookManagement.Infrastructure.Migrations
                     b.Property<int>("PublicationYear")
                         .HasColumnType("int");
 
-                    b.Property<int>("Stock")
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -84,6 +87,9 @@ namespace BookManagement.Infrastructure.Migrations
 
                     b.Property<DateTime>("DateOfBorrow")
                         .HasColumnType("datetime");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("RealReturnDate")
                         .HasColumnType("datetime");
@@ -121,6 +127,9 @@ namespace BookManagement.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
